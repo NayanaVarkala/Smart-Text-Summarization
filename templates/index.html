@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Text Summarizer</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="overlay">
+    <div class="container">
+      <h1>🌈 Smart Text Summarizer</h1>
+      <p class="subtitle">Summarize text, PDF, DOCX, or websites instantly 🚀</p>
+
+      <form action="{{ url_for('summarize') }}" method="POST" enctype="multipart/form-data">
+        <textarea name="text" placeholder="✍️ Paste your text here..."></textarea>
+        <input type="file" name="file" accept=".txt,.pdf,.docx">
+        <input type="text" name="url" placeholder="🌐 Enter website URL">
+        
+        <!-- New input for number of words -->
+        <input type="number" name="num_words" placeholder="Number of words for summary" min="10" max="1000">
+        
+        <button type="submit">✨ Summarize</button>
+    </form>
+    
+    </div>
+  </div>
+</body>
+</html>

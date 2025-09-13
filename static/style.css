@@ -1,0 +1,70 @@
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(270deg, #ff6ec4, #7873f5, #4ade80);
+  background-size: 600% 600%;
+  animation: gradientBG 15s ease infinite;
+}
+
+@keyframes gradientBG {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.overlay {
+  background: rgba(0, 0, 0, 0.3); /* slightly transparent overlay */
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap; /* allow content to spread */
+  padding: 40px;
+}
+
+.container {
+  background: white;
+  padding: 60px; /* bigger padding */
+  border-radius: 30px; /* slightly larger radius */
+  box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+  text-align: center;
+  width: 70%; /* increase width */
+  max-width: 900px; /* set a maximum */
+  min-width: 400px; /* set a minimum */
+  margin: 20px; /* scatter with margin */
+}
+
+h1 { font-size: 36px; margin-bottom: 15px; color: #333; }
+.subtitle { font-size: 18px; margin-bottom: 25px; color: #555; }
+
+textarea, input[type="file"], input[type="text"], input[type="number"] {
+  width: 90%;
+  padding: 14px;
+  margin: 14px 0;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  font-size: 15px;
+}
+
+textarea { min-height: 120px; resize: vertical; }
+
+button {
+  background: linear-gradient(90deg, #ff6ec4, #7873f5);
+  color: white;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+button:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 7px 20px rgba(0,0,0,0.25);
+}

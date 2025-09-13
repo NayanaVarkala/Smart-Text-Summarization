@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Summary Result</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="overlay">
+    <div class="container">
+      <h1>📄 Summary Result</h1>
+      <p class="summary-text">{{ summary }}</p>
+      <a class="back-btn" href="{{ url_for('index') }}"> Go Back</a>
+    </div>
+  </div>
+</body>
+</html>
+
