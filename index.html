@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Text Summarization</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the gradient background */
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #a770ef 0%, #cf8bf3 50%, #fbc2eb 100%);
+            padding: 1rem;
+        }
+
+        /* Custom scrollbar for the input/output areas */
+        .custom-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: rgba(147, 51, 234, 0.5); /* Purple-500 with opacity */
+            border-radius: 10px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+<div id="app" class="w-full max-w-4xl bg-white/90 backdrop-blur-sm shadow-2xl rounded-2xl p-6 md:p-10 transition-all duration-300">
+
+    <header class="text-center mb-8">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500 mb-2">
+            Smart Text Summarization 💡
+        </h1>
+        <p class="text-gray-600 text-lg">
+            Quickly distill key points from any document or article.
+        </p>
+    </header>
+
+    <div class="space-y-6">
+        <!-- Input Selector and Upload Area -->
+        <div class="flex flex-col md:flex-row gap-4 mb-6">
+            <button id="plainTextBtn" class="flex-1 p-3 text-white font-semibold rounded-lg shadow-md transition-transform duration-200 active:scale-95 bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
+                Plain Text / URL
+            </button>
+            <!-- Note: File and URL processing would be handled by the Python backend in a real app -->
+            <button class="flex-1 p-3 text-purple-600 font-semibold rounded-lg shadow-md bg-purple-100 hover:bg-purple-200 transition-transform duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
+                Upload PDF / DOCX (Server Required)
+            </button>
+        </div>
+
+        <!-- Main Input Form -->
+        <form id="summarizationForm">
+            <div id="textInput" class="mb-6">
+                <label for="text_input" class="block text-gray-700 font-medium mb-2">
+                    Paste Text or URL Here
+                </label>
+                <textarea id="text_input" name="text_input" rows="8" class="custom-scroll w-full p-4 border border-gray-300 rounded-xl focus:ring-purple-500 focus:border-purple-500 transition duration-150 shadow-inner resize-none" placeholder="Paste your article, document text, or a full web URL here (e.g., https://www.example.com)..."></textarea>
+            </div>
+
+            <!-- Length Customization -->
+            <div class="mb-8 p-4 bg-purple-50 rounded-xl shadow-inner">
+                <label for="summary_length" class="block text-purple-800 font-bold mb-3">
+                    Summary Length Customization
+                </label>
+                <div class="flex items-center space-x-4">
+                    <span class="text-sm text-gray-600 w-1/4 md:w-auto">Short (50 words)</span>
+                    <input type="range" id="summary_length" name="summary_length" min="50" max="500" value="150" step="50" class="w-full h-2 bg-purple-200 rounded-lg appearance-none cursor-pointer range-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <span id="currentLength" class="font-semibold text-purple-700 w-1/4 md:w-auto text-right">150 Words</span>
+                </div>
+            </div>
+
+            <!-- Summarize Button -->
+            <button type="submit" id="summarizeBtn" class="w-full py-4 text-xl font-bold text-white rounded-xl shadow-lg transition duration-300 ease-in-out bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-purple-500 focus:ring-opacity-50 flex items-center justify-center disabled:opacity-50" disabled>
+                <svg id="spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <span id="buttonText">Summarize Text Now</span>
+            </button>
+        </form>
+
+        <!-- Output Area -->
+        <div id="resultsArea" class="mt-8 pt-6 border-t border-purple-200 hidden">
+            <h2 class="text-2xl font-bold text-purple-700 mb-4">
+                Summary Result
+            </h2>
+            <div id="summaryOutput" class="custom-scroll bg-purple-50 p-6 rounded-xl border border-purple-300 text-gray-800 shadow-md max-h-96 overflow-y-auto">
+                <!-- Summary content will be injected here -->
+            </div>
+            <div id="backendNote" class="mt-4 p-3 bg-yellow-100 border border-yellow-300 text-yellow-800 rounded-lg text-sm">
+                **Note:** This is a frontend simulation. In your deployed application, this content would be fetched from your **Python/Flask backend API**.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById('summarizationForm');
+    const input = document.getElementById('text_input');
+    const lengthSlider = document.getElementById('summary_length');
+    const currentLengthSpan = document.getElementById('currentLength');
+    const summarizeBtn = document.getElementById('summarizeBtn');
+    const spinner = document.getElementById('spinner');
+    const buttonText = document.getElementById('buttonText');
+    const resultsArea = document.getElementById('resultsArea');
+    const summaryOutput = document.getElementById('summaryOutput');
+
+    // --- Utility Functions ---
+
+    /**
+     * Toggles the loading state of the application.
+     * @param {boolean} isLoading - True to show spinner and disable button, false otherwise.
+     */
+    function setLoading(isLoading) {
+        summarizeBtn.disabled = isLoading;
+        if (isLoading) {
+            spinner.classList.remove('hidden');
+            buttonText.textContent = 'Generating Summary...';
+        } else {
+            spinner.classList.add('hidden');
+            buttonText.textContent = 'Summarize Text Now';
+        }
+    }
+
+    // --- Event Listeners ---
+
+    // 1. Enable/Disable button based on input content
+    input.addEventListener('input', () => {
+        summarizeBtn.disabled = input.value.trim().length < 50;
+    });
+
+    // 2. Update summary length display
+    lengthSlider.addEventListener('input', () => {
+        currentLengthSpan.textContent = `${lengthSlider.value} Words`;
+    });
+
+    // 3. Handle Form Submission (Simulation)
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const textToSummarize = input.value.trim();
+        const requestedLength = lengthSlider.value;
+
+        if (textToSummarize.length < 50) {
+            // Display error message in the output area
+            summaryOutput.innerHTML = `<p class="text-red-600">Please provide at least 50 characters of text to summarize.</p>`;
+            resultsArea.classList.remove('hidden');
+            return;
+        }
+
+        setLoading(true);
+        resultsArea.classList.remove('hidden');
+        summaryOutput.innerHTML = `<p class="text-gray-500 italic">Processing input of ${textToSummarize.length} characters to a target of ${requestedLength} words...</p>`;
+
+        // --- MOCK API CALL SIMULATION ---
+        setTimeout(() => {
+            setLoading(false);
+
+            // A more lenient regex check for URLs (starts with http or www)
+            const isUrl = /(https?:\/\/.+|www\..+)/i.test(textToSummarize);
+            let mockSummary;
+
+            if (isUrl) {
+                // Mock Summary for URL
+                mockSummary = `<p class="font-bold text-lg text-purple-700 mb-3">Summary of Web Content (MOCK)</p>
+                               <p>The core message of the requested URL (or potential URL) focuses on the synergistic benefits of leveraging multiple data sources—specifically web scraping (via BeautifulSoup), document parsing (PyPDF2, python-docx), and synchronous data fetching (Requests)—to provide a unified, comprehensive text summarization service. The key takeaway emphasizes the application's robust ability to handle diverse inputs, ensuring high user productivity. **Note:** In a live deployment with your Python backend, this would be the real summary of the page content. The final summary was optimized for a length of approximately ${requestedLength} words.</p>`;
+            } else {
+                // Mock Summary for Plain Text
+                mockSummary = `<p class="font-bold text-lg text-purple-700 mb-3">Summary of Plain Text (MOCK)</p>
+                               <p>This generated summary highlights the necessity of concise communication in an information-dense environment. The Smart Text Summarization tool effectively extracts essential arguments and conclusions, making large documents digestible. The system uses advanced natural language processing principles (implemented in Python) to ensure accuracy and relevance, achieving a summarized length tailored to your preference of ${requestedLength} words. Key concepts remain intact.</p>`;
+            }
+
+            summaryOutput.innerHTML = mockSummary;
+
+        }, 2500); // Simulate a 2.5 second API call delay
+    });
+
+    // Initial check on load
+    input.dispatchEvent(new Event('input'));
+</script>
+
+</body>
+</html>
