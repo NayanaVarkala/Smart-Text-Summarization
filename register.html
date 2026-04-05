@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Smart Summarizer</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <a class="logo" href="/">&#128221; Smart Summarizer</a>
+    <div class="nav-links">
+        <a href="/login">Login</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="card">
+        <h1>Create Your Account</h1>
+        <p class="subtitle">Sign up for free and start summarizing your texts right away.</p>
+
+        {% if error %}
+        <div class="error-box">&#9888;&#65039; {{ error }}</div>
+        {% endif %}
+
+        <form method="POST" action="/register">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="Choose a username (min 3 characters)" required>
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Choose a password (min 4 characters)" required>
+
+            <button type="submit" class="btn btn-primary">Create Account</button>
+        </form>
+
+        <p class="auth-link">Already have an account? <a href="/login">Log in here</a></p>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Smart Summarizer</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <a class="logo" href="/">&#128221; Smart Summarizer</a>
+    <div class="nav-links">
+        <a href="/history">&#128218; My History</a>
+        <a href="/logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="card">
+        <h1>Hello, {{ username }}! &#128075;</h1>
+        <p class="subtitle">Choose how you want to summarize — paste text, enter a website link, or upload a file.</p>
+
+        {% if error %}
+        <div class="error-box">&#9888;&#65039; {{ error }}</div>
+        {% endif %}
+
+        <!-- SOURCE TABS -->
+        <div class="tabs">
+            <button class="tab-btn {% if active_tab == 'text' %}active{% endif %}" onclick="switchTab('text')">
+                &#128221; Paste Text
+            </button>
+            <button class="tab-btn {% if active_tab == 'url' %}active{% endif %}" onclick="switchTab('url')">
+                &#127760; From URL
+            </button>
+            <button class="tab-btn {% if active_tab == 'file' %}active{% endif %}" onclick="switchTab('file')">
+                &#128194; Upload File
+            </button>
+        </div>
+
+        <form method="POST" action="/dashboard" enctype="multipart/form-data">
+            <input type="hidden" name="source_type" id="source_type" value="{{ active_tab }}">
+
+            <!-- TEXT TAB -->
+            <div class="tab-panel" id="panel-text" style="display: {% if active_tab == 'text' %}block{% else %}none{% endif %}">
+                <label for="text_input">Your Text</label>
+                <textarea id="text_input" name="text_input"
+                    placeholder="Paste your article, essay, report, or any long text here...">{{ original if active_tab == 'text' else '' }}</textarea>
+            </div>
+
+            <!-- URL TAB -->
+            <div class="tab-panel" id="panel-url" style="display: {% if active_tab == 'url' %}block{% else %}none{% endif %}">
+                <label for="url_input">Website URL</label>
+                <input type="url" name="url_input" id="url_input"
+                    placeholder="https://example.com/article"
+                    value="{{ original[:80] if active_tab == 'url' else '' }}">
+                <p class="hint">&#128161; The app will visit the page and extract the text automatically.</p>
+            </div>
+
+            <!-- FILE TAB -->
+            <div class="tab-panel" id="panel-file" style="display: {% if active_tab == 'file' %}block{% else %}none{% endif %}">
+                <label for="file_upload">Upload a File</label>
+                <div class="upload-box" onclick="document.getElementById('file_upload').click()">
+                    <div class="upload-icon">&#128196;</div>
+                    <p class="upload-label" id="upload-label">Click to choose a file</p>
+                    <p class="upload-hint">Supports PDF, DOCX, and TXT files (max 5MB)</p>
+                </div>
+                <input type="file" name="file_upload" id="file_upload"
+                    accept=".pdf,.docx,.txt,.md" style="display:none"
+                    onchange="document.getElementById('upload-label').textContent = this.files[0].name">
+            </div>
+
+            <!-- WORD COUNT SLIDER (shared) -->
+            <label for="word_count">Summary Length</label>
+            <div class="slider-group">
+                <input type="range" id="word_count" name="word_count"
+                    min="30" max="500" value="500" step="10"
+                    oninput="document.getElementById('slider-display').textContent = this.value + ' words'">
+                <span class="slider-label" id="slider-display">500 words</span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">&#9889; Summarize Now</button>
+        </form>
+    </div>
+
+    {% if summary %}
+    <div class="card">
+        <h2>&#128203; Your Summary</h2>
+        <div class="result-box">{{ summary }}</div>
+        <div class="result-meta">
+            <span class="badge">{{ word_count }} words</span>
+            <a href="/history" class="btn btn-outline">View All Summaries &rarr;</a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none');
+    event.target.classList.add('active');
+    document.getElementById('panel-' + tab).style.display = 'block';
+    document.getElementById('source_type').value = tab;
+}
+</script>
+
+</body>
+</html>

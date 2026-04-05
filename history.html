@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My History - Smart Summarizer</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <a class="logo" href="/">&#128221; Smart Summarizer</a>
+    <div class="nav-links">
+        <a href="/dashboard">&#43; New Summary</a>
+        <a href="/logout">Logout</a>
+    </div>
+</nav>
+
+<div class="container wide">
+    <div class="card">
+        <h1>&#128218; My Summaries</h1>
+        <p class="subtitle">All summaries saved to your account, {{ username }}. Click delete to remove any you no longer need.</p>
+
+        {% if rows %}
+        <div style="overflow-x: auto;">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Source</th>
+                        <th>From</th>
+                        <th>Summary</th>
+                        <th>Words</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rows %}
+                    <tr>
+                        <td style="color:#aaa; font-weight:600;">{{ loop.index }}</td>
+                        <td>
+                            {% if row[1] == 'url' %}
+                                <span class="badge badge-blue">&#127760; URL</span>
+                            {% elif row[1] == 'file' %}
+                                <span class="badge badge-green">&#128194; File</span>
+                            {% else %}
+                                <span class="badge badge-gray">&#128221; Text</span>
+                            {% endif %}
+                        </td>
+                        <td class="truncate" title="{{ row[2] }}">{{ row[2][:50] }}</td>
+                        <td style="max-width: 300px; line-height: 1.6;">{{ row[3] }}</td>
+                        <td><span class="badge">{{ row[4] }} words</span></td>
+                        <td style="white-space: nowrap; color: #8a9ab0; font-size: 12px;">{{ row[5] }}</td>
+                        <td>
+                            <a href="/delete/{{ row[0] }}"
+                               class="btn btn-danger"
+                               onclick="return confirm('Are you sure you want to delete this summary?')">
+                                &#128465; Delete
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="big-icon">&#128235;</div>
+            <p>You have no summaries yet.<br>
+               <a href="/dashboard">Create your first summary!</a>
+            </p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Smart Summarizer</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <a class="logo" href="/">&#128221; Smart Summarizer</a>
+    <div class="nav-links">
+        <a href="/register">Register</a>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="card">
+        <h1>Welcome Back!</h1>
+        <p class="subtitle">Log in to access your saved summaries and create new ones.</p>
+
+        {% if error %}
+        <div class="error-box">&#9888;&#65039; {{ error }}</div>
+        {% endif %}
+
+        <form method="POST" action="/login">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="Your username" required>
+
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Your password" required>
+
+            <button type="submit" class="btn btn-primary">Log In</button>
+        </form>
+
+        <p class="auth-link">Don't have an account? <a href="/register">Register here</a></p>
+    </div>
+</div>
+
+</body>
+</html>
